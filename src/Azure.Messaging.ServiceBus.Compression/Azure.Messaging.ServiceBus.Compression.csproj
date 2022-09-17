@@ -6,7 +6,7 @@
         <AssemblyName>Azure.Messaging.ServiceBus.Compression</AssemblyName>
         <LangVersion>8</LangVersion>
         <Nullable>enable</Nullable>
-        <VersionPrefix>0.9.1</VersionPrefix>
+        <VersionPrefix>0.9.2</VersionPrefix>
         <PackageId>AzureServiceBus.Compression</PackageId>
         <Authors>Thomas Blitz</Authors>
         <Description>Supports compression of ServicebusMessages on send/receive for the Azure.Messaging.ServiceBus package</Description>
