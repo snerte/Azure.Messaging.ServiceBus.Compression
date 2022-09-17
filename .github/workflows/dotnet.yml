@@ -55,7 +55,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Download artifacts
-      - uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v3
         with:
           name: coverage.xml
       - name: Upload to Codecov
