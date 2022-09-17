@@ -16,8 +16,8 @@ namespace Microsoft.Extensions.Azure
         /// The client will be able to compress and decompress the payload of a message based on configurations.
         /// </summary>
         /// <param name="builder">The builder</param>
-        /// <param name="connectionString">Servicebus connectionstring</param>
-        /// <param name="configuration">Controls the compression</param>
+        /// <param name="connectionString">ServiceBus ConnectionString</param>
+        /// <param name="configuration">The Compression Configuration to use</param>
         /// <typeparam name="TBuilder">The Builder</typeparam>
         /// <returns></returns>
         public static IAzureClientBuilder<ServiceBusClient, ServiceBusClientOptions> AddCompressionAwareServiceBusClient<TBuilder>(this TBuilder builder, string connectionString, CompressionConfiguration configuration)
@@ -31,10 +31,10 @@ namespace Microsoft.Extensions.Azure
         /// Create a ServiceBus client that is able to Compress and decompress the messagebody of the message if required
         /// </summary>
         /// <param name="builder">The Builder</param>
-        /// <param name="connectionString">Connection to the Servicebus</param>
-        /// <param name="compressionThresholdLimitBytes">The minimum size of the messagepayload before compressing it. Basicaly if the payload is greater than the threshold it will be compressed. Must be greater than 0</param>
+        /// <param name="connectionString">ServiceBus ConnectionString</param>
+        /// <param name="compressionThresholdLimitBytes">The minimum size of the MessagePayload before compressing it. Basically if the payload is greater than the threshold it will be compressed. Must be greater than 0</param>
         /// <typeparam name="TBuilder">The Builder</typeparam>
-        /// <returns>Registration of a ServiceBusclient that is aware of Compressing and Decompressing message body content</returns>
+        /// <returns>Registration of a ServiceBusClient that is aware of Compressing and Decompressing message body content</returns>
         public static IAzureClientBuilder<ServiceBusClient, ServiceBusClientOptions> AddCompressionAwareServiceBusClient<TBuilder>(this TBuilder builder, string connectionString, int compressionThresholdLimitBytes = GzipCompressionConfiguration.MinimumCompressionSize )
             where TBuilder : IAzureClientFactoryBuilder
         {

@@ -9,7 +9,7 @@ namespace Azure.Messaging.ServiceBus.Compression
     public class CompressionAwareServiceBusReceiver : ServiceBusReceiver
     {
         private readonly CompressionConfiguration _configuration;
-
+        
         public CompressionAwareServiceBusReceiver(string queueName, ServiceBusClient client,
             CompressionConfiguration configuration, ServiceBusReceiverOptions options) : base(client, queueName, options)
         {
@@ -28,7 +28,7 @@ namespace Azure.Messaging.ServiceBus.Compression
             CancellationToken cancellationToken = new CancellationToken())
         {
             var messages =  await base.ReceiveMessagesAsync(maxMessages, maxWaitTime, cancellationToken).ConfigureAwait(false);
-            return messages.Select(AfterMessageReceived).ToList().AsReadOnly();
+            return messages.Select(HandleMessageReceived).ToList().AsReadOnly();
         }
 
         public override async Task<ServiceBusReceivedMessage> ReceiveMessageAsync(TimeSpan? maxWaitTime = null,
@@ -36,16 +36,26 @@ namespace Azure.Messaging.ServiceBus.Compression
         {
             var message = await base.ReceiveMessageAsync(maxWaitTime, cancellationToken).ConfigureAwait(false);
 
-            return AfterMessageReceived(message);
+            return HandleMessageReceived(message);
         }
-        
 
-        internal ServiceBusReceivedMessage AfterMessageReceived(ServiceBusReceivedMessage message)
+        public override async Task<ServiceBusReceivedMessage> PeekMessageAsync(long? fromSequenceNumber = null, CancellationToken cancellationToken = new CancellationToken())
         {
-            if (!ShouldDeCompress(message, out var compressionMethodName)) return message;
+            var message = await  base.PeekMessageAsync(fromSequenceNumber, cancellationToken).ConfigureAwait(false);
+            return HandleMessageReceived(message);
+        }
 
-            return DecompressAndSetBody(message, compressionMethodName);
+        public override async Task<IReadOnlyList<ServiceBusReceivedMessage>> PeekMessagesAsync(int maxMessages, long? fromSequenceNumber = null,
+            CancellationToken cancellationToken = new CancellationToken())
+        {
+            var messages =  await base.PeekMessagesAsync(maxMessages, fromSequenceNumber, cancellationToken).ConfigureAwait(false);
+            return messages.Select(HandleMessageReceived).ToList().AsReadOnly();
+        }
 
+
+        internal ServiceBusReceivedMessage HandleMessageReceived(ServiceBusReceivedMessage message)
+        {
+            return !ShouldDeCompress(message, out var compressionMethodName) ? message : DecompressAndSetBody(message, compressionMethodName);
         }
 
 
@@ -59,7 +69,7 @@ namespace Azure.Messaging.ServiceBus.Compression
             
             //Is the compressionMethodName valid?
             compressionMethodName = compressionName as string ?? throw new Exception(
-                $"{nameof(ServiceBusReceivedMessage)}. {Headers.CompressionMethodName} is set in message but value is not STRING as exptected. No valid decompressor can be selected.");
+                $"{nameof(ServiceBusReceivedMessage)}. {Headers.CompressionMethodName} is set in message but value is not STRING as expected. No valid decompressor can be selected.");
 
             return true;
         }

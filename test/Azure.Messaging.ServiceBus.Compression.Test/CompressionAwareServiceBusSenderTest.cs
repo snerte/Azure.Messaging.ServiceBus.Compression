@@ -7,7 +7,7 @@ public class CompressionAwareServiceBusSenderTest
 {
     [Fact]
     [UnitTest]
-    public async Task BeforeSend_Should_Set_ApplicationProperties_If_Body_Is_Compressed()
+    public void BeforeSend_Should_Set_ApplicationProperties_If_Body_Is_Compressed()
     {
         //ARRANGE
         var minimumCompressionThresholdBytes = 256;
@@ -19,7 +19,7 @@ public class CompressionAwareServiceBusSenderTest
         var message = new ServiceBusMessage(body);
 
         //ACT
-        var processed = await sut.BeforeMessageSend(message).ConfigureAwait(false);
+        var processed = sut.BeforeMessageSend(message);
 
         //ASSERT
 
@@ -40,7 +40,7 @@ public class CompressionAwareServiceBusSenderTest
 
     [Fact]
     [UnitTest]
-    public async Task BeforeSend_Should_Compress_Body_If_OriginalBodySize_Is_Greater_Than_Threshold()
+    public void BeforeSend_Should_Compress_Body_If_OriginalBodySize_Is_Greater_Than_Threshold()
     {
         //ARRANGE
         var minimumCompressionThresholdBytes = 256;
@@ -52,7 +52,7 @@ public class CompressionAwareServiceBusSenderTest
         var message = new ServiceBusMessage(body);
 
         //ACT
-        var processed = await sut.BeforeMessageSend(message).ConfigureAwait(false);
+        var processed = sut.BeforeMessageSend(message);
 
         //ASSERT
         // If compressed the compression header is set
@@ -66,7 +66,7 @@ public class CompressionAwareServiceBusSenderTest
     
     [Fact]
     [UnitTest]
-    public async Task BeforeSend_Should_Not_Compress_Body_If_OriginalBodySize_Is_Less_Than_Threshold()
+    public void BeforeSend_Should_Not_Compress_Body_If_OriginalBodySize_Is_Less_Than_Threshold()
     {
         //ARRANGE
         var minimumCompressionThresholdBytes = 256;
@@ -78,7 +78,7 @@ public class CompressionAwareServiceBusSenderTest
         var message = new ServiceBusMessage(body);
 
         //ACT
-        var processed = await sut.BeforeMessageSend(message).ConfigureAwait(false);
+        var processed = sut.BeforeMessageSend(message);
 
         //ASSERT
         processed.ApplicationProperties.Keys.Count().Should().Be(0,
@@ -87,7 +87,7 @@ public class CompressionAwareServiceBusSenderTest
 
     [Fact]
     [UnitTest]
-    public async Task BeforeSend_Should_Compress_Body_Can_Be_Decompressed_To_Original_Body()
+    public void BeforeSend_Should_Compress_Body_Can_Be_Decompressed_To_Original_Body()
     {
         //ARRANGE
         var minimumCompressionThresholdBytes = 256;
@@ -103,12 +103,12 @@ public class CompressionAwareServiceBusSenderTest
         var message = new ServiceBusMessage(originalBody);
 
         //ACT
-        var processed = await sut.BeforeMessageSend(message).ConfigureAwait(false);
+        var processed = sut.BeforeMessageSend(message);
 
         var fakeReceivedMessage =
             ServiceBusModelFactory.ServiceBusReceivedMessage(processed.Body,
                 properties: processed.ApplicationProperties);
-        var decompressedMessage = receiver.AfterMessageReceived(fakeReceivedMessage);
+        var decompressedMessage = receiver.HandleMessageReceived(fakeReceivedMessage);
 
         //ASSERT
         // If compressed the compression header is set
@@ -125,7 +125,7 @@ public class CompressionAwareServiceBusSenderTest
     
     [Fact]
     [UnitTest]
-    public async Task BeforeSend_NonCompressed_Message_Should_Have_Same_Body_In_Received_Message()
+    public void BeforeSend_NonCompressed_Message_Should_Have_Same_Body_In_Received_Message()
     {
         //ARRANGE
         var minimumCompressionThresholdBytes = 256;
@@ -143,13 +143,13 @@ public class CompressionAwareServiceBusSenderTest
         var message = new ServiceBusMessage(body);
 
         //ACT
-        var processed = await sut.BeforeMessageSend(message).ConfigureAwait(false);
+        var processed = sut.BeforeMessageSend(message);
         
         
         var fakeReceivedMessage =
             ServiceBusModelFactory.ServiceBusReceivedMessage(processed.Body,
                 properties: processed.ApplicationProperties);
-        var receivedMessage = receiver.AfterMessageReceived(fakeReceivedMessage);
+        var receivedMessage = receiver.HandleMessageReceived(fakeReceivedMessage);
 
         //ASSERT
         processed.ApplicationProperties.Keys.Count().Should().Be(0,

@@ -7,9 +7,19 @@ namespace Azure.Messaging.ServiceBus.Compression
     {
         private readonly CompressionConfiguration _configuration;
 
+        /// <summary>
+        /// Will create a new client using the <see cref="GzipCompressionConfiguration"/> default
+        /// </summary>
+        /// <param name="connectionString">ServiceBus connectionString</param>
+        public CompressionAwareServiceBusClient(string connectionString) : this (connectionString, new GzipCompressionConfiguration()){}
+        
+        /// <summary>
+        /// Will create a new client using the <see cref="GzipCompressionConfiguration"/> but setup with the <paramref name="compressionThresholdBytes"/> to control when to compress
+        /// </summary>
+        /// <param name="connectionString">ServiceBus ConnectionString</param>
+        /// <param name="compressionThresholdBytes">The threshold before the compression is activated. If body is greater than threshold compression will be imposed</param>
         public CompressionAwareServiceBusClient(string connectionString, int compressionThresholdBytes  = GzipCompressionConfiguration.MinimumCompressionSize) : this(connectionString, new GzipCompressionConfiguration(compressionThresholdBytes))
         {
-            
         }
         public CompressionAwareServiceBusClient(string connectionString, CompressionConfiguration configuration) : base(connectionString)
         {
@@ -17,6 +27,12 @@ namespace Azure.Messaging.ServiceBus.Compression
             Guard.AgainstNull(nameof(configuration), configuration);
         }
         
+        /// <summary>
+        /// Will create a new client using the <paramref name="configuration"/> to impose compression
+        /// </summary>
+        /// <param name="connectionString">ServiceBus ConnectionString</param>
+        /// <param name="options">ServiceBus Options</param>
+        /// <param name="configuration">Compression Configuration</param>
         public CompressionAwareServiceBusClient(string connectionString, ServiceBusClientOptions options, CompressionConfiguration configuration) : base(connectionString, options)
         {
             _configuration = configuration;

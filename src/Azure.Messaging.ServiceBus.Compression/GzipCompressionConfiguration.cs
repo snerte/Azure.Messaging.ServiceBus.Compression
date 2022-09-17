@@ -5,12 +5,12 @@ using System.IO.Compression;
 
 namespace Azure.Messaging.ServiceBus.Compression
 {
-    class GzipCompressionConfiguration : CompressionConfiguration
+    public sealed class GzipCompressionConfiguration : CompressionConfiguration
     {
         public const int MinimumCompressionSize = 1500;
 
-        public GzipCompressionConfiguration(int minimumSizeToApplyCompression = MinimumCompressionSize)
-            : base("GZip", GzipCompressor, minimumSizeToApplyCompression, new Dictionary<string, Func<byte[], byte[]>> { {"GZip", GzipDecompressor} })
+        public GzipCompressionConfiguration(int compressionThresholdLimitBytes = MinimumCompressionSize)
+            : base("GZip", GzipCompressor, compressionThresholdLimitBytes, new Dictionary<string, Func<byte[], byte[]>> { {"GZip", GzipDecompressor} })
         {
         }
 
