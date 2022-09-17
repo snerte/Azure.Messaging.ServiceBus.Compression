@@ -44,8 +44,21 @@ jobs:
         name: artifact-nuget
         path: /Users/runner/work/Azure.Messaging.ServiceBus.Compression/Azure.Messaging.ServiceBus.Compression/*nupkg
 
-    - name: Push to NuGet
-      run: dotnet nuget push *.nupkg --skip-duplicate -s https://api.nuget.org/v3/index.json -k ${{secrets.NUGET_API_KEY}}
+      
+  upload-to-nuget:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: artifact-nuget
+      - name: Test artifact download
+        run: ls -R
+      - name: Push to NuGet
+        run: dotnet nuget push *nupkg --skip-duplicate -s https://api.nuget.org/v3/index.json -k ${{secrets.NUGET_API_KEY}}
       
   
   upload-to-codecov:
@@ -58,7 +71,5 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: artifact-codecoverage
-      - name: Test artifact download
-        run: ls -R
       - name: Upload to Codecov
         uses: codecov/codecov-action@v1
