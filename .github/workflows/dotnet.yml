@@ -29,7 +29,7 @@ jobs:
       run: dotnet build -c Release --no-restore
     
     - name: Test
-      run: dotnet test --verbosity normal
+      run: dotnet test --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
 
     - name: Pack
       run: dotnet pack src/Azure.Messaging.ServiceBus.Compression/Azure.Messaging.ServiceBus.Compression.csproj -c Release --no-restore --no-build --include-symbols -p:SymbolPackageFormat=snupkg -o .
