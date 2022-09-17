@@ -28,7 +28,7 @@ namespace Azure.Messaging.ServiceBus.Compression.Extensions
         /// <param name="configuration">The Compression configuration</param>
         /// <returns>the decompressed body as bytearray.</returns>
         /// <exception cref="Exception">If the decompressed data does not have the same length as the original data</exception>
-        public static byte[] DeCompress(this ServiceBusReceivedMessage message, string compressionMethodName,
+        public static byte[] DeCompressToByteArray(this ServiceBusReceivedMessage message, string compressionMethodName,
             CompressionConfiguration configuration)
         {
             var decompressed = configuration.Decompressors(compressionMethodName, message.Body.ToArray());
@@ -37,6 +37,27 @@ namespace Azure.Messaging.ServiceBus.Compression.Extensions
                 throw new Exception($"decompressed Size: {decompressed.Length} bytes does not equal the expected size of: {message.ApplicationProperties[Headers.OriginalBodySize]}");
 
             return decompressed;
+        }
+        
+        /// <summary>
+        /// Will try and decompress using the provided <paramref name="compressionMethodName"/> and <paramref name="configuration"/>
+        /// Mark it WILL NOT check if the message is compressed. That is the responsibility of the caller to verify.
+        /// </summary>
+        /// <param name="message">The message to decompress the body</param>
+        /// <param name="compressionMethodName">The decompressor name</param>
+        /// <param name="configuration">The Compression configuration</param>
+        /// <returns>the decompressed body as bytearray.</returns>
+        /// <exception cref="Exception">If the decompressed data does not have the same length as the original data</exception>
+        public static BinaryData DeCompressToBinaryData(this ServiceBusReceivedMessage message, string compressionMethodName,
+            CompressionConfiguration configuration)
+        {
+            var decompressed = configuration.Decompressors(compressionMethodName, message.Body.ToArray());
+            if (decompressed is null) return message.Body;
+            if (!decompressed.Length.Equals(message.ApplicationProperties[Headers.OriginalBodySize]))
+                throw new Exception($"decompressed Size: {decompressed.Length} bytes does not equal the expected size of: {message.ApplicationProperties[Headers.OriginalBodySize]}");
+
+            var msg = new ServiceBusMessage(decompressed);
+            return msg.Body;
         }
     }
 }

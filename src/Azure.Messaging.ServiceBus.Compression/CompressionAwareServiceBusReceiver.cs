@@ -61,7 +61,7 @@ namespace Azure.Messaging.ServiceBus.Compression
         }
         private ServiceBusReceivedMessage DecompressAndSetBody(ServiceBusReceivedMessage message, string decompressorName)
         {
-            var decompressed = message.DeCompress(decompressorName, _configuration);
+            var decompressed = message.DeCompressToByteArray(decompressorName, _configuration);
             return Map(message, decompressed);
         }
 
