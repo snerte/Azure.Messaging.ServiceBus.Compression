@@ -16,6 +16,9 @@ The library borrows a lot from [ServiceBus.CompressionPlugin](https://github.com
 
 Available here https://www.nuget.org/packages/AzureServiceBus.Compression/
 
+## Codecoverage 
+Coverage is calculated using [Coverlet](https://github.com/coverlet-coverage/coverlet) and analysed by Codecov.io   
+[![codecov](https://codecov.io/gh/tlogik/Azure.Messaging.ServiceBus.Compression/branch/main/graph/badge.svg?token=wfvbH4xb3F)](https://codecov.io/gh/tlogik/Azure.Messaging.ServiceBus.Compression)
 
 ## Examples
 
