@@ -34,7 +34,7 @@ jobs:
     - uses: actions/upload-artifact@v2
       with:
         name: artifact-codecoverage
-        path: ./test/Azure.Messaging.ServiceBus.Compression.Test/coverage.xml
+        path: /Users/runner/work/Azure.Messaging.ServiceBus.Compression/Azure.Messaging.ServiceBus.Compression/test/Azure.Messaging.ServiceBus.Compression.Test/coverage.opencover.xml
         
     - name: Pack
       run: dotnet pack src/Azure.Messaging.ServiceBus.Compression/Azure.Messaging.ServiceBus.Compression.csproj -c Release --no-restore --no-build --include-symbols -p:SymbolPackageFormat=snupkg -o .
@@ -57,6 +57,6 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v3
         with:
-          name: coverage.xml
+          name: coverage.opencover.xml
       - name: Upload to Codecov
         uses: codecov/codecov-action@v1
