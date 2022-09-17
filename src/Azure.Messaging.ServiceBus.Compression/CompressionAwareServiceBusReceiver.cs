@@ -1,3 +1,4 @@
+using Azure.Messaging.ServiceBus.Compression.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,32 +56,12 @@ namespace Azure.Messaging.ServiceBus.Compression
 
         internal ServiceBusReceivedMessage HandleMessageReceived(ServiceBusReceivedMessage message)
         {
-            return !ShouldDeCompress(message, out var compressionMethodName) ? message : DecompressAndSetBody(message, compressionMethodName);
-        }
-
-
-        private bool ShouldDeCompress(ServiceBusReceivedMessage message, out string compressionMethodName)
-        {
-            compressionMethodName = string.Empty;
-
-            // Is it compressed?
-            if (!message.ApplicationProperties.TryGetValue(Headers.CompressionMethodName,
-                    out var compressionName)) return false;
             
-            //Is the compressionMethodName valid?
-            compressionMethodName = compressionName as string ?? throw new Exception(
-                $"{nameof(ServiceBusReceivedMessage)}. {Headers.CompressionMethodName} is set in message but value is not STRING as expected. No valid decompressor can be selected.");
-
-            return true;
+            return !message.IsCompressed( out var compressionMethodName) ? message : DecompressAndSetBody(message, compressionMethodName);
         }
-
         private ServiceBusReceivedMessage DecompressAndSetBody(ServiceBusReceivedMessage message, string decompressorName)
         {
-            var decompressed = _configuration.Decompressors(decompressorName, message.Body.ToArray());
-            if (decompressed is null) return message;
-            if (!decompressed.Length.Equals(message.ApplicationProperties[Headers.OriginalBodySize]))
-                throw new Exception($"decompressed Size: {decompressed.Length} bytes does not equal the expected size of: {message.ApplicationProperties[Headers.OriginalBodySize]}");
-            
+            var decompressed = message.DeCompress(decompressorName, _configuration);
             return Map(message, decompressed);
         }
 
