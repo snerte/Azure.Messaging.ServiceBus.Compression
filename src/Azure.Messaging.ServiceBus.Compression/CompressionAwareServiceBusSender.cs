@@ -1,3 +1,4 @@
+using Azure.Messaging.ServiceBus.Compression.Extensions;
 using System;
 using System.Linq;
 using System.Text;
@@ -53,33 +54,7 @@ namespace Azure.Messaging.ServiceBus.Compression
         
         internal ServiceBusMessage BeforeMessageSend(ServiceBusMessage message)
         {
-            //Check conditions for not compressing
-            if (!ShouldCompress(message, out var bodyAsBytes)) return message;
-
-            //We need to compress   
-            return CompressAndSetMessageBody(message, bodyAsBytes);
-        }
-
-        private bool ShouldCompress(ServiceBusMessage message, out byte[] bodyAsBytes)
-        {
-            bodyAsBytes = Array.Empty<byte>();
-            var bytes = message.Body?.ToArray();
-            
-            if (bytes is null || !bytes.Any()) return false;
-            if (bytes.Length < _configuration.MinimumSize) return false;
-            bodyAsBytes = bytes;
-            return true;
-
-        }
-
-        private ServiceBusMessage CompressAndSetMessageBody(ServiceBusMessage message, byte[] bodyAsBytes)
-        {
-            var compressedBody = _configuration.Compressor(bodyAsBytes);
-            message.Body = new BinaryData(compressedBody);
-            message.ApplicationProperties[Headers.OriginalBodySize] = bodyAsBytes.Length;
-            message.ApplicationProperties[Headers.CompressionMethodName] = _configuration.CompressionMethodName;
-            message.ApplicationProperties[Headers.CompressedBodySize] = compressedBody.Length;
-            return message;
+            return !message.ShouldBeCompressed(_configuration, out var bodyAsBytes) ? message : message.CompressAndSetMessageBody(_configuration, bodyAsBytes);
         }
     }
 }
