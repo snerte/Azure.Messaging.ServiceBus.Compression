@@ -114,7 +114,7 @@ to see which methods has been overridden.
 
 ### Receiving messages in Azure Functions
 
-To receive compressed messages in Azure Functions that use the `[ServiceBusTrigger]`, register:
+To receive compressed messages in Azure Functions that use the `[ServiceBusTrigger]`, register in `Startup.cs`:
 
 ``` cs
 services.AddCompressionAwareServiceBusMessageHandler();
@@ -123,17 +123,17 @@ services.AddCompressionAwareServiceBusMessageHandler();
 Then use the `CompressionAwareServiceBusMessageHandler` to decompress the message:
 ``` cs
 public class MyFunction {
-    private CompressionAwareServiceBusMessageHandler _reciever;
+    private CompressionAwareServiceBusMessageHandler _handler;
 
-    public MyFunction(CompressionAwareServiceBusMessageHandler receiver)
+    public MyFunction(CompressionAwareServiceBusMessageHandler handler)
     {
-        _reciever = reciever;
+        _handler = handler;
     }
 
     [Function("MyFunction")]
     public async Task Run([ServiceBusTrigger("MyTopic", "MysSubscriptionName", Connection = "ServiceBus")] ServiceBusReceivedMessage message)
     {
-        message = _reciever.HandleMessageReceived(message);
+        message = _handler.HandleMessageReceived(message);
     }    
 }    
 ``` 
