@@ -10,18 +10,14 @@ namespace Azure.Messaging.ServiceBus.Compression
     public class CompressionAwareServiceBusReceiver : ServiceBusReceiver
     {
         private readonly CompressionConfiguration _configuration;
-        private CompressionAwareServiceBusMessageHandler _messageHandler;
-
-        public CompressionAwareServiceBusReceiver()
-        {
-            _messageHandler = new CompressionAwareServiceBusMessageHandler(_configuration);
-        }
+        private readonly CompressionAwareServiceBusMessageHandler _messageHandler;
 
         public CompressionAwareServiceBusReceiver(string queueName, ServiceBusClient client,
             CompressionConfiguration configuration, ServiceBusReceiverOptions options) : base(client, queueName, options)
         {
             Guard.AgainstNull(nameof(configuration), configuration);
             _configuration = configuration;
+            _messageHandler = new CompressionAwareServiceBusMessageHandler(_configuration);
         }
         
         public CompressionAwareServiceBusReceiver(string topicName,string subscriptionName, ServiceBusClient client,
@@ -29,6 +25,7 @@ namespace Azure.Messaging.ServiceBus.Compression
         {
             Guard.AgainstNull(nameof(configuration), configuration);
             _configuration = configuration;
+            _messageHandler = new CompressionAwareServiceBusMessageHandler(_configuration);
         }
 
         public override async Task<IReadOnlyList<ServiceBusReceivedMessage>> ReceiveMessagesAsync(int maxMessages, TimeSpan? maxWaitTime = null,
