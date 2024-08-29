@@ -25,26 +25,12 @@ namespace Azure.Messaging.ServiceBus.Compression
             _configuration = configuration;
         }
         
-        public override async Task SendMessageAsync(ServiceBusMessage message, CancellationToken cancellationToken = default)
-        {
-            message = BeforeMessageSend(message);
-            await base.SendMessageAsync(message, cancellationToken).ConfigureAwait(false);
-        }
-
         public override async Task SendMessagesAsync(IEnumerable<ServiceBusMessage> messages, CancellationToken cancellationToken = new CancellationToken())
         {
-
             var processedMessages = messages.Select(BeforeMessageSend);
             await base.SendMessagesAsync(processedMessages, cancellationToken);
         }
         
-        public override Task<long> ScheduleMessageAsync(ServiceBusMessage message, DateTimeOffset scheduledEnqueueTime,
-            CancellationToken cancellationToken = new CancellationToken())
-        {
-            var processedMessage = BeforeMessageSend(message);
-            return base.ScheduleMessageAsync(processedMessage, scheduledEnqueueTime, cancellationToken);
-        }
-
         public override Task<IReadOnlyList<long>> ScheduleMessagesAsync(IEnumerable<ServiceBusMessage> messages, DateTimeOffset scheduledEnqueueTime,
             CancellationToken cancellationToken = new CancellationToken())
         {
