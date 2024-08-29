@@ -1,9 +1,6 @@
-using System
-using System.ComponentModel;
 using Azure.Core;
 using Azure.Core.Extensions;
 using Azure.Messaging.ServiceBus;
-using Azure.Messaging.ServiceBus.Administration;
 using Azure.Messaging.ServiceBus.Compression;
 
 // ReSharper disable once CheckNamespace
