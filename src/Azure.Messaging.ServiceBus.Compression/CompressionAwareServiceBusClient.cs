@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using Azure.Core;
 using Azure.Messaging.ServiceBus.Compression.Extensions;
 
 namespace Azure.Messaging.ServiceBus.Compression
@@ -38,8 +39,14 @@ namespace Azure.Messaging.ServiceBus.Compression
             _configuration = configuration;
             Guard.AgainstNull(nameof(configuration), configuration);
         }
-        
-        
+
+        public CompressionAwareServiceBusClient(string fullyQualifiedNamespace, TokenCredential credential, CompressionConfiguration configuration) : base(fullyQualifiedNamespace, credential)
+        {
+            _configuration = configuration;
+            Guard.AgainstNull(nameof(configuration), configuration);
+        }
+
+
         public override ServiceBusSender CreateSender(string queueOrTopicName)
         {
             return this.CreateCompressionAwareSender(queueOrTopicName, _configuration);
