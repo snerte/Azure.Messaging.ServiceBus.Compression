@@ -55,5 +55,10 @@ namespace Azure.Messaging.ServiceBus.Compression
             var messages =  await base.PeekMessagesAsync(maxMessages, fromSequenceNumber, cancellationToken).ConfigureAwait(false);
             return messages.Select(_messageHandler.HandleMessageReceived).ToList().AsReadOnly();
         }
+
+        internal ServiceBusReceivedMessage HandleMessageReceived(ServiceBusReceivedMessage message)
+        {
+            return _messageHandler.HandleMessageReceived(message);
+        }
     }
 }
