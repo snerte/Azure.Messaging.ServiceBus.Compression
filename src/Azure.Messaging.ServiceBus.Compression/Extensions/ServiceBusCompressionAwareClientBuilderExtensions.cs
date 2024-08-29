@@ -1,9 +1,7 @@
-using System;
-using System.ComponentModel;
 using Azure.Core.Extensions;
 using Azure.Messaging.ServiceBus;
-using Azure.Messaging.ServiceBus.Administration;
 using Azure.Messaging.ServiceBus.Compression;
+using Microsoft.Extensions.DependencyInjection;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.Azure
@@ -41,6 +39,15 @@ namespace Microsoft.Extensions.Azure
             Guard.AgainstNegativeOrZero(nameof(compressionThresholdLimitBytes), compressionThresholdLimitBytes);
             return builder.RegisterClientFactory<ServiceBusClient, ServiceBusClientOptions>(options => new CompressionAwareServiceBusClient(connectionString, options, new GzipCompressionConfiguration(compressionThresholdLimitBytes)));
         }
-        
+
+        public static IServiceCollection AddCompressionAwareServiceBusMessageHandler(this IServiceCollection services, int compressionThresholdLimitBytes = GzipCompressionConfiguration.MinimumCompressionSize)
+        {
+            return services.AddSingleton(new CompressionAwareServiceBusMessageHandler(new GzipCompressionConfiguration(compressionThresholdLimitBytes)));
+        }
+
+        public static IServiceCollection AddCompressionAwareServiceBusMessageHandler(this IServiceCollection services, CompressionConfiguration configuration)
+        {
+            return services.AddSingleton(new CompressionAwareServiceBusMessageHandler(configuration));
+        }
     }
 }

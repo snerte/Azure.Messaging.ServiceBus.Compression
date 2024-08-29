@@ -4,7 +4,7 @@
         <TargetFramework>netstandard2.0</TargetFramework>
         <RootNamespace>Azure.Messaging.ServiceBus.Compression</RootNamespace>
         <AssemblyName>Azure.Messaging.ServiceBus.Compression</AssemblyName>
-        <LangVersion>8</LangVersion>
+        <LangVersion>10</LangVersion>
         <Nullable>enable</Nullable>
         <VersionPrefix>0.9.5</VersionPrefix>
         <PackageId>AzureServiceBus.Compression</PackageId>
@@ -19,7 +19,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.10.0" />
+      <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.13.1" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
     </ItemGroup>
 
 </Project>

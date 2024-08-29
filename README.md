@@ -112,6 +112,32 @@ var messages = await receiver.ReceiveMessagesAsync(10, cancellationToken: cancel
 Please check the class [CompressionAwareServiceBusReceiver](https://github.com/tlogik/Azure.Messaging.ServiceBus.Compression/blob/main/src/Azure.Messaging.ServiceBus.Compression/CompressionAwareServiceBusReceiver.cs)
 to see which methods has been overridden.
 
+### Receiving messages in Azure Functions
+
+To receive compressed messages in Azure Functions that use the `[ServiceBusTrigger]`, register:
+
+``` cs
+services.AddCompressionAwareServiceBusMessageHandler();
+```
+
+Then use the `CompressionAwareServiceBusMessageHandler` to decompress the message:
+``` cs
+public class MyFunction {
+    private CompressionAwareServiceBusMessageHandler _reciever;
+
+    public MyFunction(CompressionAwareServiceBusMessageHandler receiver)
+    {
+        _reciever = reciever;
+    }
+
+    [Function("MyFunction")]
+    public async Task Run([ServiceBusTrigger("MyTopic", "MysSubscriptionName", Connection = "ServiceBus")] ServiceBusReceivedMessage message)
+    {
+        message = _reciever.HandleMessageReceived(message);
+    }    
+}    
+``` 
+
 ### Custom compressions
 
 Configuration and registration
@@ -140,6 +166,3 @@ var client = new CompressionAwareServiceBusClient(connectionString: "YOUR_SERVIC
 
 ### Overrides
 Only a subset of overrides has been implemented. The overrides should be sufficient to support the purpose of compressing and decompressing message Payloads but if you find something is missing please feel free to fix and create PR.
-
-### Azure functions
-Since Azure function [ServiceBusTrigger] attributes uses other library to instanciate its connection to the Servicebus, this lib cannot be used to change how the FunctionApp will get messages.
